@@ -69,6 +69,8 @@ def _duration_to_seconds(v: str) -> int:
         return int(v[:-1]) * 60
     if v.endswith("h"):
         return int(v[:-1]) * 3600
+    if v.endswith("d"):
+        return int(v[:-1]) * 86400
     raise NotImplementedError(f"unknown duration {v}")
 
 
@@ -132,7 +134,11 @@ class InfluxQLToM3DashboardConverter:
         return metric
 
     def add_to_metric_and_object_list(self, old_targets, new_targets):
+        # import pdb; pdb.set_trace()
         for i, old_target in enumerate(old_targets):
+            # try:
+            if 'measurement' not in old_target:
+                print(old_target)
             metric_name = old_target['measurement'] + "_"
             # replace . and - with _ for the metric names. (promql valid metric name contains _ only)
             metric_name += self.get_metric_field_from_select(old_target['select'])
@@ -144,6 +150,8 @@ class InfluxQLToM3DashboardConverter:
                     self.metric_to_objects[metric_name] = {}
                 self.metric_to_objects[metric_name][self.current_dashboard] = []
             self.metric_to_objects[metric_name][self.current_dashboard].append(new_targets[i])
+            # except Exception as ex:
+            #     print(f'exception raised {ex}')
 
     def get_metric_aggregation(self, metric_name):
         for metric_re, fun in METRIC_AGGREGATION_REGEXPS:
@@ -615,6 +623,7 @@ class InfluxQLToM3DashboardConverter:
         else:
             expr, over_times, fills = self.convert_special_or_expression(query)
         fmt = target["resultFormat"]
+        # print(f"influxql_query - {query}, promql_query - {expr}")
         new_target = {
             "expr": expr,
             "format": fmt,
@@ -745,8 +754,11 @@ class InfluxQLToM3DashboardConverter:
                 query = target["query"].replace("\n", " ")
                 query = re.sub("  +", " ", query)
                 new_target, over_times, fills = self.convert_query(query, target, legend)
+                # print('convert_query')
             else:
                 new_target, over_times, fills = self.convert_to_query(target, legend)
+                # print('convert_to_query')
+            # import pdb; pdb.set_trace()
             new_targets.append(new_target)
             r_fills.extend(fills)
             r_over_times.extend(over_times)

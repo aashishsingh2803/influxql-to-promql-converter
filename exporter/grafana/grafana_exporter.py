@@ -39,7 +39,7 @@ class GrafanaExporter(Exporter):
             "folderUid": str(folder_uid),
             "overwrite": True
         }
-
+        # import pdb; pdb.set_trace()
         response = requests.post(self._api_endpoint + '/dashboards/db', data=json.dumps(dashboard_json),
                                  headers=self._api_headers)
         if response.status_code != 200:
@@ -48,16 +48,19 @@ class GrafanaExporter(Exporter):
             self._logger.debug(f"Successfully exported dashboard: {dashboard['title']}")
 
     def _create_migration_folder(self):
-        create_folder_url = self._api_endpoint + '/folders'
-        current_datetime = datetime.now()
-        dt_string = current_datetime.strftime("%d/%m/%Y %H:%M:%S")
-        folder_uid = uuid.uuid4()
-        folder_uid_string = str(folder_uid)
-        folder_name = f"Migrated Dashboards - {dt_string}"
-        request_json = {"title": folder_name, "uid": folder_uid_string}
-        response = requests.post(create_folder_url, data=json.dumps(request_json), headers=self._api_headers)
-        if response.status_code != 200:
-            self._logger.error(f"Error creating dashboards folder: {response.content}")
-        else:
-            self._logger.debug(f"Successfully created migration folder in grafana, with name: {folder_name}")
-        return folder_uid
+        # uid of   Migrated Dashboards folders.
+        return '1c5353b8-744d-45cb-a441-0563bad22762'
+
+        # create_folder_url = self._api_endpoint + '/folders'
+        # current_datetime = datetime.now()
+        # dt_string = current_datetime.strftime("%d/%m/%Y %H:%M:%S")
+        # folder_uid = uuid.uuid4()
+        # folder_uid_string = str(folder_uid)
+        # folder_name = f"Migrated Dashboards"
+        # request_json = {"title": folder_name, "uid": folder_uid_string}
+        # response = requests.post(create_folder_url, data=json.dumps(request_json), headers=self._api_headers)
+        # if response.status_code != 200:
+        #     self._logger.error(f"Error creating dashboards folder: {response.content}")
+        # else:
+        #     self._logger.debug(f"Successfully created migration folder in grafana, with name: {folder_name}\n\n")
+        # return folder_uid

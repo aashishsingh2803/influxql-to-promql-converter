@@ -61,16 +61,20 @@ def run():
     logging.getLogger(__name__).setLevel(level=get_log_level_descriptor(config.get('log_level')))
 
     import_dashboards(dashboards, modules[0])
+    # import pdb; pdb.set_trace()
     converter = InfluxQLToM3DashboardConverter(replacement_datasource=config.get('datasource'),
                                                log_level=get_log_level_descriptor(config.get('log_level')))
     influx_dashboards = []
     convert_dashboards(converter, dashboards, influx_dashboards, invalid_dashboards)
+    # import pdb; pdb.set_trace()
     metric_to_objects = converter.metric_to_objects
-    metric_to_objects = process_dashboards(metric_to_objects, modules[1], report)
+    # import pdb; pdb.set_trace()
+    # metric_to_objects = process_dashboards(metric_to_objects, modules[1], report)
+
     export_dashboards(influx_dashboards, modules[2])
-    logger.info(f"Finished converting {len(influx_dashboards)} dashboards")
-    create_report(invalid_dashboards, metric_to_objects, modules[1], report)
-    logger.info(f"Finished running in --- {(time.time() - start_time)} seconds ---  ")
+    # logger.info(f"Finished converting {len(influx_dashboards)} dashboards")
+    # create_report(invalid_dashboards, metric_to_objects, modules[1], report)
+    # logger.info(f"Finished running in --- {(time.time() - start_time)} seconds ---  ")
 
 
 def build_module_list_from_config(module_names, modules) -> dict:
@@ -97,6 +101,7 @@ def import_dashboards(dashboards, inputs):
     for input in inputs:
         logger.info(f"Starting to fetch dashboards from importer: {input}")
         dashboards.extend(input.fetch_dashboards())
+        break
 
 
 def export_dashboards(influx_dashboards, exporters):

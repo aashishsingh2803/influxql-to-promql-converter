@@ -34,9 +34,11 @@ class GrafanaImporter(Importer):
     def _build_dashboards_list(self) -> list:
         response = requests.get(f'{self._grafana_endpoint}/api/search', headers=self.API_HEADERS)
         dashboards_uids = self._extract_dashboard_uids(response)
+        dashboards_uids = ['000001418']
         dashboards = []
         for i, uid in enumerate(dashboards_uids):
             response = requests.get(f'{self._grafana_endpoint}/api/dashboards/uid/{uid}', headers=self.API_HEADERS)
             dashboard = response.json()
             dashboards.append(dashboard['dashboard'])
+            # break
         return dashboards
